@@ -9,7 +9,7 @@ import (
 )
 
 type response struct {
-	Data interface{} `json:"Movies"`
+	Data interface{} `json:"movie"`
 }
 type data struct {
 	Movies interface{} `json:"movie"`
@@ -34,7 +34,11 @@ func (h *MovieHandler) GetByID(ctx *gofr.Context) (interface{}, error) {
 		}
 	}
 
-	return resp, nil
+	result := response{
+		Data: resp,
+	}
+
+	return types.Response{Data: result}, nil
 }
 
 func (h *MovieHandler) GetAll(ctx *gofr.Context) (interface{}, error) {
@@ -72,7 +76,11 @@ func (h *MovieHandler) Create(ctx *gofr.Context) (interface{}, error) {
 		return nil, errors.Error("Internal server Error")
 	}
 
-	return resp, nil
+	result := response{
+		Data: resp,
+	}
+
+	return types.Response{Data: result}, nil
 }
 
 func (h *MovieHandler) UpdateByID(ctx *gofr.Context) (interface{}, error) {
@@ -90,5 +98,9 @@ func (h *MovieHandler) UpdateByID(ctx *gofr.Context) (interface{}, error) {
 		return nil, errors.Error("Internal Server Error")
 	}
 
-	return resp, nil
+	result := response{
+		Data: resp,
+	}
+
+	return types.Response{Data: result}, nil
 }
