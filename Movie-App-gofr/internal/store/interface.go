@@ -1,4 +1,3 @@
-//go:generate mockgen -destination=interface_mock.go -package=store github.com/RicheshZopsmart/Movie-App-gofr/internal/store MovieInterface
 package store
 
 import (

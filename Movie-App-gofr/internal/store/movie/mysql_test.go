@@ -213,7 +213,6 @@ func TestUpdateByID(t *testing.T) {
 
 	ctx.Context = context.Background()
 
-	// format := "2006-01-02 15:04:05"
 	query := "update movie_details set rating=?,plot=?,releaseDate=?,updatedAt=? where deletedAt is null and id=?;"
 
 	tcs := []struct {

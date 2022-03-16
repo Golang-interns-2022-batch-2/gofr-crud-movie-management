@@ -105,13 +105,3 @@ func (moviehandler ServiceHandler) UpdatedByIDService(ctx *gofr.Context, mObj *m
 
 	return resultObj, nil
 }
-
-// func (moviehandler ServiceHandler) GetAllService() (*[]model.MovieModel, error) {
-// 	resultObj, err := moviehandler.movServHandler.GetAll()
-
-// 	if err != nil {
-// 		return nil, err
-// 	}
-
-// 	return resultObj, nil
-// }
