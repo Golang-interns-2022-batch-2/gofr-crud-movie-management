@@ -35,7 +35,7 @@ func (m *MockInterface) EXPECT() *MockInterfaceMockRecorder {
 }
 
 // DeleteService mocks base method
-func (m *MockInterface) DeleteService(arg0 *gofr.Context, arg1 int) error {
+func (m *MockInterface) DeleteService(arg0 *gofr.Context, arg1 string) error {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "DeleteService", arg0, arg1)
 	ret0, _ := ret[0].(error)
@@ -64,7 +64,7 @@ func (mr *MockInterfaceMockRecorder) GetAllService(arg0 interface{}) *gomock.Cal
 }
 
 // GetByIDService mocks base method
-func (m *MockInterface) GetByIDService(arg0 *gofr.Context, arg1 int) (*models.Movie, error) {
+func (m *MockInterface) GetByIDService(arg0 *gofr.Context, arg1 string) (*models.Movie, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetByIDService", arg0, arg1)
 	ret0, _ := ret[0].(*models.Movie)
@@ -94,16 +94,16 @@ func (mr *MockInterfaceMockRecorder) InsertService(arg0, arg1 interface{}) *gomo
 }
 
 // UpdatedService mocks base method
-func (m *MockInterface) UpdatedService(arg0 *gofr.Context, arg1 *models.Movie) (*models.Movie, error) {
+func (m *MockInterface) UpdatedService(arg0 *gofr.Context, arg1 *models.Movie, arg2 string) (*models.Movie, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "UpdatedService", arg0, arg1)
+	ret := m.ctrl.Call(m, "UpdatedService", arg0, arg1, arg2)
 	ret0, _ := ret[0].(*models.Movie)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // UpdatedService indicates an expected call of UpdatedService
-func (mr *MockInterfaceMockRecorder) UpdatedService(arg0, arg1 interface{}) *gomock.Call {
+func (mr *MockInterfaceMockRecorder) UpdatedService(arg0, arg1, arg2 interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdatedService", reflect.TypeOf((*MockInterface)(nil).UpdatedService), arg0, arg1)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdatedService", reflect.TypeOf((*MockInterface)(nil).UpdatedService), arg0, arg1, arg2)
 }

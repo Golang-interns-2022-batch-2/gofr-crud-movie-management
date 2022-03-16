@@ -44,20 +44,7 @@ func TestGetById(t *testing.T) {
 			id:     "1",
 			desc:   "success case",
 			output: &mov,
-			mock:   MovieServiceMock.EXPECT().GetByIDService(gomock.Any(), 1).Return(&mov, nil),
-		},
-		{
-			id:   "",
-			desc: "Missing Id",
-
-			output: nil,
-			err:    gofrerr.MissingParam{Param: []string{"id"}},
-		},
-		{
-			id:     "a",
-			desc:   "Invalid Id",
-			output: nil,
-			err:    gofrerr.InvalidParam{Param: []string{"id"}},
+			mock:   MovieServiceMock.EXPECT().GetByIDService(gomock.Any(), "1").Return(&mov, nil),
 		},
 
 		{
@@ -68,7 +55,7 @@ func TestGetById(t *testing.T) {
 				Entity: "Movie",
 				ID:     "1",
 			},
-			mock: MovieServiceMock.EXPECT().GetByIDService(gomock.Any(), 1).Return(nil, gofrerr.EntityNotFound{
+			mock: MovieServiceMock.EXPECT().GetByIDService(gomock.Any(), "1").Return(nil, gofrerr.EntityNotFound{
 				Entity: "Movie",
 				ID:     "1",
 			}),
@@ -129,9 +116,7 @@ func TestGetAll(t *testing.T) {
 			desc: "success case",
 
 			output: response{
-				Code:   200,
-				Status: "Success",
-				Data:   data{mov},
+				Data: data{mov},
 			},
 			mock: MovieServiceMock.EXPECT().GetAllService(gomock.Any()).Return(mov, nil),
 		},
@@ -181,26 +166,15 @@ func TestDelete(t *testing.T) {
 			id:     "1",
 			output: "Deleted successfully",
 			err:    nil,
-			mock:   MovieServiceMock.EXPECT().DeleteService(gomock.Any(), 1).Return(nil),
+			mock:   MovieServiceMock.EXPECT().DeleteService(gomock.Any(), "1").Return(nil),
 		},
+
 		{
-			id:     "",
-			desc:   "Missing Id",
-			output: nil,
-			err:    gofrerr.MissingParam{Param: []string{"id"}},
-		},
-		{
-			id:     "a",
-			desc:   "Invalid Id",
-			output: nil,
-			err:    gofrerr.InvalidParam{Param: []string{"id"}},
-		},
-		{
-			desc:   "Id not found",
+			desc:   "Fail Case",
 			id:     "-2",
 			output: nil,
 			err:    gofrerr.Error("Internal Servor Error"),
-			mock:   MovieServiceMock.EXPECT().DeleteService(gomock.Any(), -2).Return(gofrerr.Error("Internal Servor Error")),
+			mock:   MovieServiceMock.EXPECT().DeleteService(gomock.Any(), "-2").Return(gofrerr.Error("Internal Servor Error")),
 		},
 	}
 
@@ -258,13 +232,6 @@ func TestPost(t *testing.T) {
 			err:    nil,
 			output: &movie,
 			mock:   MovieServiceMock.EXPECT().InsertService(gomock.Any(), &movie).Return(&movie, nil),
-		},
-
-		{
-			desc:   "Invalid Id",
-			body:   []byte(`{"id":-9,"name":"MazeRunner","genre":"Action","rating":5.0,"releasedate": "2022-12-17","plot":"PLOT!","released":true}`),
-			output: nil,
-			err:    gofrerr.InvalidParam{Param: []string{"id"}},
 		},
 
 		{
@@ -338,7 +305,7 @@ func TestPut(t *testing.T) {
 			body: requestBody,
 
 			output: &movie,
-			mock: MovieServiceMock.EXPECT().UpdatedService(gomock.Any(), &movie).
+			mock: MovieServiceMock.EXPECT().UpdatedService(gomock.Any(), &movie, "1").
 				Return(&models.Movie{
 					ID:          1,
 					Name:        "MazeRunner",
@@ -348,20 +315,6 @@ func TestPut(t *testing.T) {
 					Plot:        "PLOT!",
 					Released:    true,
 				}, nil),
-		},
-
-		{
-			id:   "",
-			desc: "Missing Id",
-
-			output: nil,
-			err:    gofrerr.MissingParam{Param: []string{"id"}},
-		},
-		{
-			id:     "a",
-			desc:   "Invalid Id",
-			output: nil,
-			err:    gofrerr.InvalidParam{Param: []string{"id"}},
 		},
 
 		{
@@ -379,7 +332,7 @@ func TestPut(t *testing.T) {
 			body:   requestBody,
 			output: nil,
 			err:    gofrerr.Error("Internal Server Error"),
-			mock:   MovieServiceMock.EXPECT().UpdatedService(gomock.Any(), &movie).Return(nil, gofrerr.Error("Internal Server Error")),
+			mock:   MovieServiceMock.EXPECT().UpdatedService(gomock.Any(), &movie, "1").Return(nil, gofrerr.Error("Internal Server Error")),
 		},
 	}
 

@@ -90,27 +90,40 @@ func TestGetById(t *testing.T) {
 	CurrTime := time.Now()
 	testcase := []struct {
 		desc   string
-		input  int
+		input  string
 		output *models.Movie
 		err    error
 		query  *gomock.Call
 	}{
 		{
-			desc:   "Fail case - Negative Id ",
-			input:  -4,
+			input: "",
+			desc:  "Missing Id",
+
 			output: nil,
-			err:    gofrerr.Error("id cannot be nagative or zero"),
+			err:    gofrerr.MissingParam{Param: []string{"id"}},
+		},
+		{
+			input:  "a",
+			desc:   "Invalid Id",
+			output: nil,
+			err:    gofrerr.InvalidParam{Param: []string{"id"}},
+		},
+		{
+			desc:   "Fail case - Negative Id ",
+			input:  "-4",
+			output: nil,
+			err:    gofrerr.InvalidParam{Param: []string{"id"}},
 		},
 		{
 			desc:   "Testing call function in service layer",
-			input:  4,
+			input:  "4",
 			output: nil,
 			err:    gofrerr.Error("error in service layer while calling getby id"),
 			query:  mockMovieStore.EXPECT().GetByID(ctx, 4).Return(nil, gofrerr.Error("error in service layer while calling getby id")),
 		},
 		{
 			desc:  "Success Case",
-			input: 4,
+			input: "4",
 			output: &models.Movie{
 				ID:          1,
 				Name:        "MazeRunner",
@@ -229,7 +242,7 @@ func Test_Create(t *testing.T) {
 				Released:    true,
 			},
 			output: nil,
-			err:    gofrerr.Error("name cannot be null"),
+			err:    gofrerr.InvalidParam{Param: []string{"name"}},
 		},
 		{
 			desc: "Invalid Genre",
@@ -245,7 +258,7 @@ func Test_Create(t *testing.T) {
 				Released:    true,
 			},
 			output: nil,
-			err:    gofrerr.Error("genre cannot be null"),
+			err:    gofrerr.InvalidParam{Param: []string{"genre"}},
 		},
 		{
 			desc: "Invalid Plot",
@@ -261,7 +274,7 @@ func Test_Create(t *testing.T) {
 				Released:    true,
 			},
 			output: nil,
-			err:    gofrerr.Error("plot cannot be empty"),
+			err:    gofrerr.InvalidParam{Param: []string{"plot"}},
 		},
 		{
 			desc: "Invalid Rating",
@@ -277,7 +290,7 @@ func Test_Create(t *testing.T) {
 				Released:    true,
 			},
 			output: nil,
-			err:    gofrerr.Error("rating cannot be negative"),
+			err:    gofrerr.InvalidParam{Param: []string{"rating"}},
 		},
 
 		{
@@ -294,7 +307,7 @@ func Test_Create(t *testing.T) {
 				Released:    true,
 			},
 			output: nil,
-			err:    gofrerr.Error("id cannot be negative"),
+			err:    gofrerr.InvalidParam{Param: []string{"id"}},
 		},
 
 		{
@@ -351,13 +364,25 @@ func Test_Delete(t *testing.T) {
 	CurrTime := time.Now()
 	testcase := []struct {
 		desc  string
-		input int
+		input string
 		err   error
 		query []interface{}
 	}{
 		{
+			input: "",
+			desc:  "Missing Id",
+			// output: nil,
+			err: gofrerr.MissingParam{Param: []string{"id"}},
+		},
+		{
+			input: "a",
+			desc:  "Invalid Id",
+			// output: nil,
+			err: gofrerr.InvalidParam{Param: []string{"id"}},
+		},
+		{
 			desc:  "Success Case",
-			input: 2,
+			input: "2",
 			err:   nil,
 			query: []interface{}{mockMovieStore.EXPECT().GetByID(ctx, 2).Return(&models.Movie{
 				ID:          1,
@@ -373,12 +398,12 @@ func Test_Delete(t *testing.T) {
 		},
 		{
 			desc:  "Fail - Negative id ",
-			input: -1,
+			input: "-1",
 			err:   gofrerr.Error("id cannot be nagative"),
 		},
 		{
 			desc:  "Fail Case",
-			input: 2,
+			input: "2",
 			err:   gofrerr.Error("error in service layer for deleting id"),
 			query: []interface{}{mockMovieStore.EXPECT().GetByID(ctx, 2).Return(&models.Movie{
 				ID:          1,
@@ -395,7 +420,7 @@ func Test_Delete(t *testing.T) {
 
 		{
 			desc:  "Failed to find id in db ",
-			input: 1,
+			input: "1",
 			err:   gofrerr.Error("id no present in the database"),
 			query: []interface{}{mockMovieStore.EXPECT().GetByID(ctx, 1).Return(nil, gofrerr.Error("id no present in the database"))},
 		},
@@ -414,6 +439,7 @@ func Test_Delete(t *testing.T) {
 		})
 	}
 }
+
 func Test_Update(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
@@ -424,10 +450,43 @@ func Test_Update(t *testing.T) {
 	testcase := []struct {
 		desc   string
 		input  *models.Movie
+		id     string
 		output *models.Movie
 		err    error
 		query  interface{}
 	}{
+		{
+			id:   "",
+			desc: "Missing Id",
+
+			output: nil,
+			err:    gofrerr.MissingParam{Param: []string{"id"}},
+		},
+		{
+			id:     "a",
+			desc:   "Invalid Id",
+			output: nil,
+			err:    gofrerr.InvalidParam{Param: []string{"id"}},
+		},
+
+		{
+			desc: "Invalid ID",
+			id:   "-1",
+			input: &models.Movie{
+				ID:          -1,
+				Name:        "MazeRunner",
+				Genre:       "Action",
+				Rating:      5,
+				ReleaseDate: "2022-12-17",
+				UpdatedAt:   CurrTime.String(),
+				CreatedAt:   CurrTime.String(),
+				Plot:        "PLOT!",
+				Released:    true,
+			},
+			output: nil,
+			err:    gofrerr.InvalidParam{Param: []string{"id"}},
+		},
+
 		{
 			desc: "Success Case",
 			input: &models.Movie{
@@ -441,6 +500,7 @@ func Test_Update(t *testing.T) {
 				Plot:        "PLOT!",
 				Released:    true,
 			},
+			id: "1",
 			output: &models.Movie{
 				ID:          1,
 				Name:        "MazeRunner",
@@ -488,24 +548,8 @@ func Test_Update(t *testing.T) {
 		},
 
 		{
-			desc: "Invalid ID",
-			input: &models.Movie{
-				ID:          -1,
-				Name:        "MazeRunner",
-				Genre:       "Action",
-				Rating:      5,
-				ReleaseDate: "2022-12-17",
-				UpdatedAt:   CurrTime.String(),
-				CreatedAt:   CurrTime.String(),
-				Plot:        "PLOT!",
-				Released:    true,
-			},
-			output: nil,
-			err:    gofrerr.Error("ID cannot be negative"),
-		},
-
-		{
 			desc: "Id not in db",
+			id:   "1",
 			input: &models.Movie{
 				ID:          1,
 				Name:        "MazeRunner",
@@ -525,6 +569,7 @@ func Test_Update(t *testing.T) {
 
 		{
 			desc: "Id not in db",
+			id:   "1",
 			input: &models.Movie{
 				ID:          1,
 				Name:        "MazeRunner",
@@ -568,7 +613,7 @@ func Test_Update(t *testing.T) {
 		tc := tc
 
 		t.Run("", func(t *testing.T) {
-			out, err := movieService.UpdatedService(ctx, tc.input)
+			out, err := movieService.UpdatedService(ctx, tc.input, tc.id)
 			if err != nil && err.Error() != tc.err.Error() {
 				t.Errorf("Expected %v got %v", tc.err, err)
 			}
