@@ -1,12 +1,11 @@
 package main
 
 import (
+	"developer.zopsmart.com/go/gofr/pkg/gofr"
 
 	// Own Packages
-	"developer.zopsmart.com/go/gofr/pkg/gofr"
 	ht "github.com/RicheshZopsmart/Movie-App-gofr/internal/http/movie"
 	serv "github.com/RicheshZopsmart/Movie-App-gofr/internal/service/movie"
-
 	"github.com/RicheshZopsmart/Movie-App-gofr/internal/store/movie"
 )
 
