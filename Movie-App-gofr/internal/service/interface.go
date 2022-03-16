@@ -5,7 +5,7 @@ import (
 	"github.com/RicheshZopsmart/Movie-App-gofr/internal/model"
 )
 
-type MovieServiceInterface interface {
+type MovieManager interface {
 	InsertMovieService(*gofr.Context, *model.MovieModel) (*model.MovieModel, error)
 	GetByIDService(*gofr.Context, int) (*model.MovieModel, error)
 	DeleteByIDService(ctx *gofr.Context, id int) error

@@ -2,6 +2,7 @@ package movie
 
 import (
 	"database/sql"
+	"strconv"
 	"time"
 
 	"developer.zopsmart.com/go/gofr/pkg/errors"
@@ -51,6 +52,10 @@ func (s DBStore) GetByID(ctx *gofr.Context, id int) (*model.MovieModel, error) {
 		&CreatedAtScan, &movie.Plot, &movie.Released,
 	)
 
+	if err == sql.ErrNoRows {
+		return nil, errors.EntityNotFound{Entity: "movies", ID: ctx.PathParam("id")}
+	}
+
 	if err != nil {
 		return nil, err
 	}
@@ -69,6 +74,10 @@ func (s DBStore) UpdateByID(ctx *gofr.Context, movieObj *model.MovieModel) (*mod
 
 	_, err := ctx.DB().ExecContext(ctx, query, movieObj.Rating, movieObj.Plot, movieObj.ReleaseDate, updateTime, movieObj.ID)
 
+	if err == sql.ErrNoRows {
+		return nil, errors.EntityNotFound{Entity: "movie", ID: ctx.PathParam("id")}
+	}
+
 	return movieObj, err
 }
 func (s DBStore) DeleteByID(ctx *gofr.Context, id int) error {
@@ -78,14 +87,18 @@ func (s DBStore) DeleteByID(ctx *gofr.Context, id int) error {
 
 	_, err := ctx.DB().ExecContext(ctx, query, updateTime, id)
 
+	if err == sql.ErrNoRows {
+		return errors.EntityNotFound{Entity: "movie", ID: strconv.Itoa(id)}
+	}
+
 	return err
 }
 func (s DBStore) GetAll(ctx *gofr.Context) (*[]model.MovieModel, error) {
 	query := "select id,name,genre,rating,releaseDate,updatedAt,createdAt,plot,released from movie_details where deletedAt is null;"
 
-	var mObj []model.MovieModel
+	var movies []model.MovieModel
 
-	var tmpObj model.MovieModel
+	var movie model.MovieModel
 
 	rows, err := ctx.DB().QueryContext(ctx, query)
 
@@ -95,23 +108,23 @@ func (s DBStore) GetAll(ctx *gofr.Context) (*[]model.MovieModel, error) {
 
 	for rows.Next() {
 		err := rows.Scan(
-			&tmpObj.ID,
-			&tmpObj.Name,
-			&tmpObj.Genre,
-			&tmpObj.Rating,
-			&tmpObj.ReleaseDate,
-			&tmpObj.UpdatedAt,
-			&tmpObj.CreatedAt,
-			&tmpObj.Plot,
-			&tmpObj.Released,
+			&movie.ID,
+			&movie.Name,
+			&movie.Genre,
+			&movie.Rating,
+			&movie.ReleaseDate,
+			&movie.UpdatedAt,
+			&movie.CreatedAt,
+			&movie.Plot,
+			&movie.Released,
 		)
 
 		if err != nil {
 			return nil, errors.Error("Scan Error")
 		}
 
-		mObj = append(mObj, tmpObj)
+		movies = append(movies, movie)
 	}
 
-	return &mObj, nil
+	return &movies, nil
 }

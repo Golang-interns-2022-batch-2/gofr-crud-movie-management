@@ -12,8 +12,8 @@ import (
 
 func main() {
 	datastore := movie.NewDBHandler()
-	servicestore := serv.NewMovieServiceHandler(datastore)
-	handler := ht.New(servicestore)
+	serviceHandler := serv.NewMovieServiceHandler(datastore)
+	handler := ht.New(serviceHandler)
 
 	app := gofr.New()
 	app.Server.ValidateHeaders = false

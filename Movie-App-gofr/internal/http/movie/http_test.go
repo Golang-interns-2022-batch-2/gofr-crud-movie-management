@@ -42,7 +42,6 @@ func TestCreateMovieRequest(t *testing.T) {
 			}`),
 			statusCode: 400,
 			err:        errors.InvalidParam{Param: []string{"body"}},
-			// mock:       configServ.EXPECT().InsertMovieService(nil, errors.New("body parsing")),
 		},
 		{
 			Body: []byte(`{

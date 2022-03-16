@@ -1,12 +1,12 @@
 package movie
 
 import (
-	"database/sql"
-
 	"strconv"
 
 	"developer.zopsmart.com/go/gofr/pkg/errors"
 	"developer.zopsmart.com/go/gofr/pkg/gofr"
+	"developer.zopsmart.com/go/gofr/pkg/gofr/types"
+
 	"github.com/RicheshZopsmart/Movie-App-gofr/internal/model"
 	serv "github.com/RicheshZopsmart/Movie-App-gofr/internal/service"
 )
@@ -27,9 +27,9 @@ type GetAllModelResponse struct {
 }
 
 type ModelResponse struct {
-	Code   int       `json:"code"`
-	Status string    `json:"status"`
-	Data   DataField `json:"data"`
+	Code   int         `json:"code"`
+	Status string      `json:"status"`
+	Data   interface{} `json:"data"`
 }
 type ResponseModel struct {
 	Code    int
@@ -37,29 +37,20 @@ type ResponseModel struct {
 	Message string
 }
 type Handler struct {
-	ServiceHandler serv.MovieServiceInterface
+	ServiceHandler serv.MovieManager
 }
 
-func New(movieinterface serv.MovieServiceInterface) *Handler {
+func New(movieinterface serv.MovieManager) *Handler {
 	return &Handler{ServiceHandler: movieinterface}
 }
 
-func jsonSuccessMessage() ResponseModel {
-	ErrObj := ResponseModel{Code: 200, Message: "Successfully Executed!", Status: "Success"}
-	return ErrObj
-}
-
-func (mh Handler) GetByIDRequest(ctx *gofr.Context) (interface{}, error) {
+func (h Handler) GetByIDRequest(ctx *gofr.Context) (interface{}, error) {
 	id, err := strconv.Atoi(ctx.PathParam("id"))
 	if err != nil {
 		return nil, errors.InvalidParam{Param: []string{"id"}}
 	}
 
-	mObj, err := mh.ServiceHandler.GetByIDService(ctx, id)
-
-	if err == sql.ErrNoRows {
-		return nil, errors.EntityNotFound{Entity: "movies", ID: ctx.PathParam("id")}
-	}
+	mObj, err := h.ServiceHandler.GetByIDService(ctx, id)
 
 	if err != nil {
 		return nil, &errors.Response{StatusCode: 500, Code: "500", Reason: "Internal Server Error"}
@@ -77,7 +68,7 @@ func (mh Handler) GetByIDRequest(ctx *gofr.Context) (interface{}, error) {
 	return respObj, nil
 }
 
-func (mh Handler) CreateMovieRequest(ctx *gofr.Context) (interface{}, error) {
+func (h Handler) CreateMovieRequest(ctx *gofr.Context) (interface{}, error) {
 	var movieObj model.MovieModel
 
 	err := ctx.Bind(&movieObj)
@@ -86,7 +77,7 @@ func (mh Handler) CreateMovieRequest(ctx *gofr.Context) (interface{}, error) {
 		return nil, errors.InvalidParam{Param: []string{"body"}}
 	}
 
-	resMovieObj, err := mh.ServiceHandler.InsertMovieService(ctx, &movieObj)
+	resMovieObj, err := h.ServiceHandler.InsertMovieService(ctx, &movieObj)
 
 	if err != nil {
 		return nil, errors.Error("Internal Server Error")
@@ -105,26 +96,26 @@ func (mh Handler) CreateMovieRequest(ctx *gofr.Context) (interface{}, error) {
 	return respObj, nil
 }
 
-func (mh Handler) DeleteByIDRequest(ctx *gofr.Context) (interface{}, error) {
+func (h Handler) DeleteByIDRequest(ctx *gofr.Context) (interface{}, error) {
 	id, err := strconv.Atoi(ctx.PathParam("id"))
 	if err != nil {
 		return nil, errors.InvalidParam{Param: []string{"id"}}
 	}
 
-	err = mh.ServiceHandler.DeleteByIDService(ctx, id)
-	if err == sql.ErrNoRows {
-		return nil, errors.EntityNotFound{Entity: "movie", ID: strconv.Itoa(id)}
-	}
+	err = h.ServiceHandler.DeleteByIDService(ctx, id)
 
 	if err != nil {
 		return nil, err
 	}
 
-	return jsonSuccessMessage(), nil
+	response := types.Response{
+		Data: ResponseModel{Code: 200, Status: "SUCCESS", Message: "Movie Deleted Successfully"},
+	}
+
+	return response, nil
 }
 
-func (mh Handler) UpdateByIDRequest(ctx *gofr.Context) (interface{}, error) {
-	rawID := ctx.PathParam("id")
+func (h Handler) UpdateByIDRequest(ctx *gofr.Context) (interface{}, error) {
 	id, err := strconv.Atoi(ctx.PathParam("id"))
 
 	if err != nil {
@@ -140,31 +131,21 @@ func (mh Handler) UpdateByIDRequest(ctx *gofr.Context) (interface{}, error) {
 	}
 
 	resMovieObj.ID = id
-	newResMovieObj, err := mh.ServiceHandler.UpdatedByIDService(ctx, &resMovieObj)
-
-	if err == sql.ErrNoRows {
-		return nil, errors.EntityNotFound{Entity: "movie", ID: rawID}
-	}
+	newResMovieObj, err := h.ServiceHandler.UpdatedByIDService(ctx, &resMovieObj)
 
 	if err != nil {
 		return nil, errors.Error("internal server error")
 	}
 
-	movies := DataField{
-		Movie: newResMovieObj,
+	response := types.Response{
+		Data: DataField{Movie: newResMovieObj},
 	}
 
-	respObj := ModelResponse{
-		Code:   200,
-		Status: "SUCCESS",
-		Data:   movies,
-	}
-
-	return respObj, err
+	return response, err
 }
 
-func (mh Handler) GetAllRequest(ctx *gofr.Context) (interface{}, error) {
-	movies, err := mh.ServiceHandler.GetAllService(ctx)
+func (h Handler) GetAllRequest(ctx *gofr.Context) (interface{}, error) {
+	movies, err := h.ServiceHandler.GetAllService(ctx)
 
 	if err != nil {
 		return nil, errors.Error("internal server error")
@@ -174,11 +155,9 @@ func (mh Handler) GetAllRequest(ctx *gofr.Context) (interface{}, error) {
 		Movie: movies,
 	}
 
-	respObj := GetAllModelResponse{
-		Code:   200,
-		Status: "SUCCESS",
-		Data:   moviesObj,
+	response := types.Response{
+		Data: moviesObj,
 	}
 
-	return respObj, nil
+	return response, nil
 }

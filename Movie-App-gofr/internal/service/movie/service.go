@@ -8,10 +8,10 @@ import (
 )
 
 type ServiceHandler struct {
-	movServHandler store.MovieInterface
+	movServHandler store.MovieRequestManager
 }
 
-func NewMovieServiceHandler(storeInterface store.MovieInterface) *ServiceHandler {
+func NewMovieServiceHandler(storeInterface store.MovieRequestManager) *ServiceHandler {
 	return &ServiceHandler{movServHandler: storeInterface}
 }
 
@@ -58,7 +58,6 @@ func (moviehandler ServiceHandler) GetByIDService(ctx *gofr.Context, id int) (*m
 	return mObj, nil
 }
 func (moviehandler ServiceHandler) GetAllService(ctx *gofr.Context) (*[]model.MovieModel, error) {
-
 	resultObj, err := moviehandler.movServHandler.GetAll(ctx)
 
 	return resultObj, err
@@ -105,13 +104,3 @@ func (moviehandler ServiceHandler) UpdatedByIDService(ctx *gofr.Context, mObj *m
 
 	return resultObj, nil
 }
-
-// func (moviehandler ServiceHandler) GetAllService() (*[]model.MovieModel, error) {
-// 	resultObj, err := moviehandler.movServHandler.GetAll()
-
-// 	if err != nil {
-// 		return nil, err
-// 	}
-
-// 	return resultObj, nil
-// }

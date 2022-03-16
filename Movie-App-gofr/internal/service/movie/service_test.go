@@ -76,12 +76,29 @@ func TestService_CreateMovie(t *testing.T) {
 			mock:        movieStore.EXPECT().CreateMovie(gomock.Any(), gomock.Any()).Return(nil, errors.Error("Server Error")),
 			expectedErr: errors.Error("Server Error"),
 		},
+		{
+			movie: model.MovieModel{
+				ID:          1,
+				Name:        "Silicon Valley",
+				Genre:       "comedy",
+				Rating:      4.5,
+				ReleaseDate: "2014-12-24",
+				UpdatedAt:   "2022-03-06 19:29:33",
+				CreatedAt:   "2022-03-06 13:53:00",
+				DeletedAt:   "2022-03-06 13:53:00",
+				Plot:        "2022-03-06 13:53:00",
+				Released:    true,
+			},
+			mock:        movieStore.EXPECT().CreateMovie(gomock.Any(), gomock.Any()).Return(&model.MovieModel{}, nil),
+			expectedErr: nil,
+		},
 	}
 	h := NewMovieServiceHandler(movieStore)
 
 	for _, tc := range tcs {
 		ctx := gofr.NewContext(nil, nil, gofr.New())
 		_, errEmp := h.InsertMovieService(ctx, &tc.movie)
+
 		if errEmp != nil && errEmp.Error() != tc.expectedErr.Error() {
 			t.Errorf("Got %v , Want : %v", tc.expectedErr, errEmp)
 		}
@@ -117,7 +134,6 @@ func TestService_GetByID(t *testing.T) {
 	h := NewMovieServiceHandler(movieStore)
 
 	for _, tc := range tcs {
-
 		ctx := gofr.NewContext(nil, nil, gofr.New())
 
 		_, errEmp := h.GetByIDService(ctx, tc.ID)
@@ -161,6 +177,7 @@ func TestService_DeleteByID(t *testing.T) {
 	for _, tc := range tcs {
 		ctx := gofr.NewContext(nil, nil, gofr.New())
 		errEmp := h.DeleteByIDService(ctx, tc.ID)
+
 		if errEmp != nil && errEmp.Error() != tc.expectedErr.Error() {
 			t.Errorf("Got %v , Want : %v", tc.expectedErr, errEmp)
 		}
@@ -256,6 +273,7 @@ func TestService_UpdateByID(t *testing.T) {
 	for _, tc := range tcs {
 		ctx := gofr.NewContext(nil, nil, gofr.New())
 		_, errEmp := h.UpdatedByIDService(ctx, &tc.movie)
+
 		if errEmp != nil && errEmp.Error() != tc.expectedErr.Error() {
 			t.Errorf("Got %v , Want : %v", tc.expectedErr, errEmp)
 		}
@@ -276,7 +294,7 @@ func TestService_GetAll(t *testing.T) {
 			mock:        movieStore.EXPECT().GetAll(gomock.Any()).Return(nil, sql.ErrNoRows),
 		},
 		{
-			expectedErr: sql.ErrNoRows,
+			expectedErr: nil,
 			mock:        movieStore.EXPECT().GetAll(gomock.Any()).Return(&[]model.MovieModel{}, nil),
 		},
 	}
@@ -286,6 +304,7 @@ func TestService_GetAll(t *testing.T) {
 	for _, tc := range tcs {
 		ctx := gofr.NewContext(nil, nil, gofr.New())
 		_, errEmp := h.GetAllService(ctx)
+
 		if errEmp != nil && errEmp.Error() != tc.expectedErr.Error() {
 			t.Errorf("Got %v , Want : %v", tc.expectedErr, errEmp)
 		}

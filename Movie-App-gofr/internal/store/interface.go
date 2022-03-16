@@ -1,4 +1,3 @@
-//go:generate mockgen -destination=interface_mock.go -package=store github.com/RicheshZopsmart/Movie-App-gofr/internal/store MovieInterface
 package store
 
 import (
@@ -6,7 +5,7 @@ import (
 	"github.com/RicheshZopsmart/Movie-App-gofr/internal/model"
 )
 
-type MovieInterface interface {
+type MovieRequestManager interface {
 	DeleteByID(ctx *gofr.Context, id int) error
 	CreateMovie(*gofr.Context, *model.MovieModel) (*model.MovieModel, error)
 	GetByID(ctx *gofr.Context, id int) (*model.MovieModel, error)

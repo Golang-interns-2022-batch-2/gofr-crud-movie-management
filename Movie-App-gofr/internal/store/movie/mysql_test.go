@@ -23,31 +23,26 @@ func TestCreateMovie(t *testing.T) {
 	ctx := gofr.NewContext(nil, nil, &gofr.Gofr{DataStore: datastore.DataStore{ORM: db}})
 
 	ctx.Context = context.Background()
+
 	defer db.Close()
 
 	query := "insert into movie_details(name,genre,rating,plot,released,releaseDate) values(?,?,?,?,?,?); "
 
 	tcs := []struct {
+		movie       model.MovieModel
 		Desc        string
-		ID          int
-		Name        string
-		Genre       string
-		Rating      float64
-		Plot        string
-		released    bool
-		releaseDate string
 		mockQ       interface{}
 		expectedErr error
 	}{
 		{
-			Desc:        "Success",
-			ID:          1,
-			Name:        "Silicon Valley",
-			Genre:       "comedy",
-			Rating:      4.5,
-			Plot:        "Richard",
-			released:    true,
-			releaseDate: "2014-12-17",
+			Desc: "Success",
+			movie: model.MovieModel{ID: 1,
+				Name:        "Silicon Valley",
+				Genre:       "comedy",
+				Rating:      4.5,
+				Plot:        "Richard",
+				Released:    true,
+				ReleaseDate: "2014-12-17"},
 			mockQ: mock.
 				ExpectExec(query).
 				WithArgs("Silicon Valley", "comedy", 4.5, "Richard", true, "2014-12-17").
@@ -55,14 +50,16 @@ func TestCreateMovie(t *testing.T) {
 			expectedErr: nil,
 		},
 		{
-			Desc:        "Prepare Error Tc",
-			ID:          1,
-			Name:        "Silicon Valley",
-			Genre:       "comedy",
-			Rating:      4.5,
-			Plot:        "Richard",
-			released:    true,
-			releaseDate: "2014-12-17",
+			Desc: "Prepare Error Tc",
+			movie: model.MovieModel{
+				ID:          1,
+				Name:        "Silicon Valley",
+				Genre:       "comedy",
+				Rating:      4.5,
+				Plot:        "Richard",
+				Released:    true,
+				ReleaseDate: "2014-12-17",
+			},
 			mockQ: mock.
 				ExpectExec(query).
 				WithArgs("Silicon Valley", "comedy", 4.5, "Richard", true, "2014-12-17").
@@ -70,14 +67,17 @@ func TestCreateMovie(t *testing.T) {
 			expectedErr: errors.Error("Internal Server Error"),
 		},
 		{
-			Desc:        "Failure",
-			ID:          1,
-			Name:        "Silicon Valley",
-			Genre:       "comedy",
-			Rating:      4.5,
-			Plot:        "Richard",
-			released:    true,
-			releaseDate: "2014-12-17",
+			Desc: "Failure",
+			movie: model.MovieModel{
+				ID:          1,
+				Name:        "Silicon Valley",
+				Genre:       "comedy",
+				Rating:      4.5,
+				Plot:        "Richard",
+				Released:    true,
+				ReleaseDate: "2014-12-17",
+			},
+
 			mockQ: mock.
 				ExpectExec(query).
 				WithArgs("Silicon Valley", "comedy", 4.5, "Richard", true, "2014-12-17").
@@ -91,8 +91,8 @@ func TestCreateMovie(t *testing.T) {
 		tt := tt
 		t.Run(tt.Desc, func(t *testing.T) {
 			tmpObj := model.MovieModel{
-				ID: tt.ID, Name: tt.Name, Genre: tt.Genre, Rating: tt.Rating,
-				Plot: tt.Plot, ReleaseDate: tt.releaseDate, Released: tt.released,
+				ID: tt.movie.ID, Name: tt.movie.Name, Genre: tt.movie.Genre, Rating: tt.movie.Rating,
+				Plot: tt.movie.Plot, ReleaseDate: tt.movie.ReleaseDate, Released: tt.movie.Released,
 			}
 			mObj, err := handler.CreateMovie(ctx, &tmpObj)
 
@@ -118,27 +118,21 @@ func TestGetByID(t *testing.T) {
 
 	tcs := []struct {
 		Desc        string
-		ID          int
-		Name        string
-		Genre       string
-		Rating      float64
-		Plot        string
-		released    bool
-		releaseDate string
-		updatedAt   string
-		createdAt   string
+		movie       model.MovieModel
 		mockQ       interface{}
 		expectedErr error
 	}{
 		{
-			Desc:        "Success",
-			ID:          1,
-			Name:        "Silicon Valley",
-			Genre:       "comedy",
-			Rating:      4.5,
-			Plot:        "Richard",
-			released:    true,
-			releaseDate: "2014-12-17",
+			Desc: "Success",
+			movie: model.MovieModel{
+				ID:          1,
+				Name:        "Silicon Valley",
+				Genre:       "comedy",
+				Rating:      4.5,
+				Plot:        "Richard",
+				Released:    true,
+				ReleaseDate: "2014-12-17",
+			},
 			mockQ: mock.ExpectQuery(query).
 				WithArgs(1).
 				WillReturnRows(sqlmock.NewRows([]string{"id", "name", "genre", "rating", "releaseDate", "updatedAt", "createdAt", "plot", "released"}).
@@ -146,14 +140,15 @@ func TestGetByID(t *testing.T) {
 			expectedErr: nil,
 		},
 		{
-			Desc:        "Success",
-			ID:          -1,
-			Name:        "Silicon Valley",
-			Genre:       "comedy",
-			Rating:      4.5,
-			Plot:        "Richard",
-			released:    true,
-			releaseDate: "2014-12-17",
+			Desc: "Success",
+			movie: model.MovieModel{ID: -1,
+				Name:        "Silicon Valley",
+				Genre:       "comedy",
+				Rating:      4.5,
+				Plot:        "Richard",
+				Released:    true,
+				ReleaseDate: "2014-12-17",
+			},
 			mockQ: mock.ExpectPrepare(query).
 				ExpectQuery().
 				WithArgs(-1).
@@ -161,14 +156,16 @@ func TestGetByID(t *testing.T) {
 			expectedErr: sql.ErrNoRows,
 		},
 		{
-			Desc:        "Success",
-			ID:          1000,
-			Name:        "Silicon Valley",
-			Genre:       "comedy",
-			Rating:      4.5,
-			Plot:        "Richard",
-			released:    true,
-			releaseDate: "2014-12-17",
+			Desc: "Success",
+			movie: model.MovieModel{
+				ID:          1000,
+				Name:        "Silicon Valley",
+				Genre:       "comedy",
+				Rating:      4.5,
+				Plot:        "Richard",
+				Released:    true,
+				ReleaseDate: "2014-12-17",
+			},
 			mockQ: mock.ExpectPrepare(query).
 				ExpectQuery().
 				WithArgs(1000).
@@ -176,14 +173,16 @@ func TestGetByID(t *testing.T) {
 			expectedErr: sql.ErrNoRows,
 		},
 		{
-			Desc:        "Success",
-			ID:          1,
-			Name:        "Silicon Valley",
-			Genre:       "comedy",
-			Rating:      4.5,
-			Plot:        "Richard",
-			released:    true,
-			releaseDate: "2014-12-17",
+			Desc: "Success",
+			movie: model.MovieModel{
+				ID:          1,
+				Name:        "Silicon Valley",
+				Genre:       "comedy",
+				Rating:      4.5,
+				Plot:        "Richard",
+				Released:    true,
+				ReleaseDate: "2014-12-17",
+			},
 			mockQ: mock.ExpectQuery(query).
 				WithArgs(1).WillReturnError(sql.ErrNoRows),
 			expectedErr: sql.ErrNoRows,
@@ -194,7 +193,7 @@ func TestGetByID(t *testing.T) {
 	for _, tt := range tcs {
 		tt := tt
 		t.Run(tt.Desc, func(t *testing.T) {
-			mObj, err := handler.GetByID(ctx, tt.ID)
+			mObj, err := handler.GetByID(ctx, tt.movie.ID)
 			if mObj != nil && err != nil && err.Error() != tt.expectedErr.Error() {
 				t.Errorf("Got : %v, Want : %v", err.Error(), tt.expectedErr.Error())
 			}
@@ -213,35 +212,27 @@ func TestUpdateByID(t *testing.T) {
 
 	ctx.Context = context.Background()
 
-	// format := "2006-01-02 15:04:05"
 	query := "update movie_details set rating=?,plot=?,releaseDate=?,updatedAt=? where deletedAt is null and id=?;"
 
 	tcs := []struct {
 		Desc        string
-		ID          int
-		Name        string
-		Genre       string
-		Rating      float64
-		Plot        string
-		released    bool
-		releaseDate string
-		updatedAt   string
-		createdAt   string
-		UpdatedAt   string
+		movie       model.MovieModel
 		mockQ       interface{}
 		expectedErr error
 	}{
 
 		{
-			Desc:        "exec success",
-			ID:          2,
-			Name:        "Silicon Valley",
-			Genre:       "comedy",
-			Rating:      4.5,
-			Plot:        "Richard",
-			released:    true,
-			releaseDate: "2014-12-17",
-			updatedAt:   "2014-12-17",
+			Desc: "exec success",
+			movie: model.MovieModel{
+				ID:          2,
+				Name:        "Silicon Valley",
+				Genre:       "comedy",
+				Rating:      4.5,
+				Plot:        "Richard",
+				Released:    true,
+				ReleaseDate: "2014-12-17",
+				UpdatedAt:   "2014-12-17",
+			},
 			mockQ: mock.ExpectExec(query).
 				WithArgs(4.5, "Richard", sqlmock.AnyArg(), sqlmock.AnyArg(), 2).
 				WillReturnError(sql.ErrNoRows),
@@ -256,14 +247,14 @@ func TestUpdateByID(t *testing.T) {
 
 		t.Run(tt.Desc, func(t *testing.T) {
 			tmpObj := model.MovieModel{
-				ID:          tt.ID,
-				Name:        tt.Name,
-				Genre:       tt.Genre,
-				Rating:      tt.Rating,
-				Plot:        tt.Plot,
-				Released:    tt.released,
-				ReleaseDate: tt.releaseDate,
-				UpdatedAt:   tt.updatedAt}
+				ID:          tt.movie.ID,
+				Name:        tt.movie.Name,
+				Genre:       tt.movie.Genre,
+				Rating:      tt.movie.Rating,
+				Plot:        tt.movie.Plot,
+				Released:    tt.movie.Released,
+				ReleaseDate: tt.movie.ReleaseDate,
+				UpdatedAt:   tt.movie.UpdatedAt}
 
 			mObj, err := handler.UpdateByID(ctx, &tmpObj)
 
@@ -289,30 +280,22 @@ func TestDeleteByID(t *testing.T) {
 	format := "2006-01-02 15:04:05"
 	tcs := []struct {
 		Desc        string
-		ID          int
-		Name        string
-		Genre       string
-		Rating      float64
-		Plot        string
-		released    bool
-		releaseDate string
-		updatedAt   string
-		createdAt   string
-		UpdatedAt   string
+		movie       model.MovieModel
 		mockQ       interface{}
 		mockTime    time.Time
 		expectedErr error
 	}{
 
 		{
-			Desc:     "Success",
-			ID:       1,
-			Name:     "Silicon Valley",
-			Genre:    "comedy",
-			Rating:   4.5,
-			Plot:     "Richard",
-			released: true,
-
+			Desc: "Success",
+			movie: model.MovieModel{
+				ID:       1,
+				Name:     "Silicon Valley",
+				Genre:    "comedy",
+				Rating:   4.5,
+				Plot:     "Richard",
+				Released: true,
+			},
 			mockQ: mock.ExpectExec(query).
 				WithArgs(time.Now().Format(format), 1).
 				WillReturnError(sql.ErrNoRows),
@@ -324,7 +307,7 @@ func TestDeleteByID(t *testing.T) {
 
 	for _, tt := range tcs {
 		tt := tt
-		err := handler.DeleteByID(ctx, tt.ID)
+		err := handler.DeleteByID(ctx, tt.movie.ID)
 		t.Run(tt.Desc, func(t *testing.T) {
 			if err != nil && err.Error() != tt.expectedErr.Error() {
 				t.Errorf("Got : %v and Expected error: %v", err.Error(), tt.expectedErr.Error())
@@ -338,6 +321,7 @@ func TestGetAll(t *testing.T) {
 	ctx := gofr.NewContext(nil, nil, &gofr.Gofr{DataStore: datastore.DataStore{ORM: db}})
 
 	ctx.Context = context.Background()
+
 	if err != nil {
 		t.Errorf(err.Error())
 	}
