@@ -15,8 +15,3 @@ type Movie struct {
 	Plot        string    `json:"Plot"`
 	Released    bool      `json:"Released"`
 }
-type Response struct {
-	Data       interface{} `json:"data"`
-	Message    string      `json:"message"`
-	StatusCode int         `json:"statusCode"`
-}

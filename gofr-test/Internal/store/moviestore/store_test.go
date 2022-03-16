@@ -4,7 +4,9 @@ import (
 	"context"
 	"database/sql"
 	"developer.zopsmart.com/go/gofr/pkg/datastore"
+	"developer.zopsmart.com/go/gofr/pkg/errors"
 	"developer.zopsmart.com/go/gofr/pkg/gofr"
+	"fmt"
 	"github.com/DATA-DOG/go-sqlmock"
 	"golangprog/gofr-test/Internal/models"
 	"reflect"
@@ -44,7 +46,7 @@ func TestGetByID(t *testing.T) {
 			id: -1,
 			mockQuery: mock.ExpectQuery("Select id, name, genre, rating, releaseDate, updatedAt, " +
 				"createdAt, plot, released FROM movie WHERE id = ? and deletedAt IS NULL").WithArgs(-1).WillReturnError(sql.ErrNoRows),
-			expectError: sql.ErrNoRows,
+			expectError: errors.EntityNotFound{Entity: "movie", ID: fmt.Sprint(-1)},
 			desc:        "failure case",
 		},
 	}
@@ -88,17 +90,10 @@ func TestGetAll(t *testing.T) {
 			desc:        "success case",
 		},
 		{
-			id: 3,
-			mockQuery: mock.ExpectQuery("Select id, name, genre, rating, releaseDate, updatedAt, createdAt, plot, released FROM movie " +
-				"WHERE deletedAt IS NULL").WithArgs().WillReturnError(sql.ErrNoRows),
-			expectError: sql.ErrNoRows,
-			desc:        "failure case",
-		},
-		{
 			id: -1,
 			mockQuery: mock.ExpectQuery("Select id, name, genre, rating, releaseDate, updatedAt, createdAt, plot, released FROM movie " +
 				"WHERE deletedAt IS NULL").WithArgs().WillReturnError(sql.ErrNoRows),
-			expectError: sql.ErrNoRows,
+			expectError: errors.EntityNotFound{Entity: "movies"},
 			desc:        "failure case",
 		},
 	}
@@ -139,15 +134,9 @@ func TestDelete(t *testing.T) {
 			desc:        "success case",
 		},
 		{
-			id:          3,
-			mockQuery:   mock.ExpectExec("update movie set deletedAt = Now() Where id = ?").WithArgs(3).WillReturnError(sql.ErrNoRows),
-			expectError: sql.ErrNoRows,
-			desc:        "failure case",
-		},
-		{
 			id:          -1,
 			mockQuery:   mock.ExpectExec("update movie set deletedAt = Now() Where id = ?").WithArgs(-1).WillReturnError(sql.ErrNoRows),
-			expectError: sql.ErrNoRows,
+			expectError: errors.EntityNotFound{Entity: "id", ID: "-1"},
 			desc:        "failure case",
 		},
 	}
@@ -198,21 +187,11 @@ func TestCreate(t *testing.T) {
 			desc:        "success case",
 		},
 		{
-			id: 3,
-			mockQuery: mock.ExpectExec("INSERT into movie (name, genre, rating, "+
-				"releaseDate, createdAt, updatedAt, plot, released) VALUES (?,?,?,?,?,?,?,?)").WithArgs("", "", 0.0, time.Time{}, sqlmock.AnyArg(),
-				sqlmock.AnyArg(), "", false).WillReturnError(sql.ErrNoRows),
-			expectOutput: &models.Movie{ID: 3, Name: "", Genre: "", Rating: 0.0, ReleaseDate: time.Time{},
-				CreatedAt: time.Time{}, UpdatedAt: time.Time{}, Plot: "", Released: false},
-			expectError: sql.ErrNoRows,
-			desc:        "failure case",
-		},
-		{
 			id: -1,
 			mockQuery: mock.ExpectExec("INSERT into movie (name, genre, rating, "+
 				"releaseDate, createdAt, updatedAt, plot, released) VALUES (?,?,?,?,?,?,?,?)").WithArgs("", "", 0.0, time.Time{},
 				sqlmock.AnyArg(), sqlmock.AnyArg(), "", false).WillReturnError(sql.ErrNoRows),
-			expectError: sql.ErrNoRows,
+			expectError: errors.EntityNotFound{Entity: "id", ID: "-1"},
 			expectOutput: &models.Movie{ID: -1, Name: "", Genre: "", Rating: 0.0, ReleaseDate: time.Time{}, CreatedAt: time.Time{},
 				UpdatedAt: time.Time{}, Plot: "", Released: false},
 			desc: "failure case",
@@ -267,23 +246,13 @@ func TestUpdate(t *testing.T) {
 			desc:        "success case",
 		},
 		{
-			id: 3,
-			mockQuery: mock.ExpectExec("Update movie SET name=?, genre=?, rating=?, releaseDate=?, updatedAt=?, createdAt=?, plot=?, released=? "+
-				"WHERE id = ? and deletedAt IS NULL").WithArgs("", "", 0.0, time.Time{}, sqlmock.AnyArg(),
-				sqlmock.AnyArg(), "", false, 3).WillReturnError(sql.ErrNoRows),
-			inp: models.Movie{ID: 3, Name: "", Genre: "", Rating: 0.0, ReleaseDate: time.Time{}, CreatedAt: time.Time{}, UpdatedAt: time.Time{},
-				Plot: "", Released: false},
-			expectError: sql.ErrNoRows,
-			desc:        "failure case",
-		},
-		{
 			id: -1,
 			mockQuery: mock.ExpectExec("Update movie SET name=?, genre=?, rating=?, releaseDate=?, updatedAt=?, "+
 				"createdAt=?, plot=?, released=? WHERE id = ? and deletedAt IS NULL").WithArgs("", "", 0.0, time.Time{},
 				sqlmock.AnyArg(), sqlmock.AnyArg(), "", false, -1).WillReturnError(sql.ErrNoRows),
 			inp: models.Movie{ID: -1, Name: "", Genre: "", Rating: 0.0, ReleaseDate: time.Time{}, CreatedAt: time.Time{}, UpdatedAt: time.Time{},
 				Plot: "", Released: false},
-			expectError: sql.ErrNoRows,
+			expectError: errors.EntityNotFound{Entity: "id", ID: "-1"},
 			desc:        "failure case",
 		},
 	}

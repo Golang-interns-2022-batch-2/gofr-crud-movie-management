@@ -3,8 +3,8 @@ package movieservice
 import (
 	"context"
 	"database/sql"
+	"developer.zopsmart.com/go/gofr/pkg/errors"
 	"developer.zopsmart.com/go/gofr/pkg/gofr"
-	"errors"
 	"github.com/golang/mock/gomock"
 	"golangprog/gofr-test/Internal/models"
 	"golangprog/gofr-test/Internal/store"
@@ -49,13 +49,8 @@ func TestGetByID(t *testing.T) {
 			},
 		},
 		{desc: "Get failure",
-			id:            0,
-			expectedError: errors.New("error invalid id"),
-			mock:          nil,
-		},
-		{desc: "Get failure",
 			id:            -1,
-			expectedError: errors.New("error invalid id"),
+			expectedError: errors.InvalidParam{Param: []string{"id"}},
 			mock:          nil,
 		},
 	}
@@ -132,11 +127,8 @@ func TestMovieDel(t *testing.T) {
 			},
 		},
 		{desc: "Get failure",
-			id:            0,
-			expectedError: errors.New("error invalid id"),
-			mock: []*gomock.Call{
-				mockService.EXPECT().Delete(ctx, 0).Return(errors.New("error invalid id")),
-			},
+			id:            -1,
+			expectedError: errors.InvalidParam{Param: []string{"id"}},
 		},
 	}
 
@@ -202,7 +194,7 @@ func TestCreate(t *testing.T) {
 		{desc: "Get failure",
 			id:            0,
 			testMv:        testMovie1,
-			expectedError: errors.New("error invalid name"),
+			expectedError: errors.InvalidParam{},
 			mock:          nil,
 		},
 	}
@@ -267,7 +259,7 @@ func TestUpdate(t *testing.T) {
 		},
 		{desc: "Get failure",
 			id:            0,
-			expectedError: errors.New("error invalid name"),
+			expectedError: errors.InvalidParam{},
 			mv:            testMovie1,
 			mock:          nil,
 		},

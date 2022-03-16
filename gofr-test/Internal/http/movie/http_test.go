@@ -2,11 +2,11 @@ package movie
 
 import (
 	"bytes"
+	"developer.zopsmart.com/go/gofr/pkg/errors"
 	"developer.zopsmart.com/go/gofr/pkg/gofr"
 	"developer.zopsmart.com/go/gofr/pkg/gofr/request"
 	"developer.zopsmart.com/go/gofr/pkg/gofr/responder"
 	"encoding/json"
-	"errors"
 	"github.com/golang/mock/gomock"
 	"golangprog/gofr-test/Internal/models"
 	"golangprog/gofr-test/Internal/service"
@@ -55,9 +55,9 @@ func TestGetByID(t *testing.T) {
 		{desc: "Get failure",
 			id:                 "0",
 			expectedStatusCode: 400,
-			expectederr:        errors.New("bad request"),
+			expectederr:        errors.InvalidParam{Param: []string{"id"}},
 			mock: []*gomock.Call{
-				mockService.EXPECT().GetByID(gomock.Any(), 0).Return(nil, errors.New("bad request")),
+				mockService.EXPECT().GetByID(gomock.Any(), 0).Return(nil, errors.InvalidParam{Param: []string{"id"}}),
 			},
 		},
 	}
@@ -84,6 +84,7 @@ func TestGetByID(t *testing.T) {
 		}
 	}
 }
+
 func TestGetAll(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
@@ -106,9 +107,9 @@ func TestGetAll(t *testing.T) {
 		{desc: "Get failure",
 			id:                 "0",
 			expectedStatusCode: 400,
-			expectederr:        errors.New("bad request"),
+			expectederr:        errors.Error("bad request"),
 			mock: []*gomock.Call{
-				mockService.EXPECT().GetAll(gomock.Any()).Return(nil, errors.New("bad request")),
+				mockService.EXPECT().GetAll(gomock.Any()).Return(nil, errors.Error("bad request")),
 			},
 		},
 	}
@@ -183,8 +184,8 @@ func TestCreate(t *testing.T) {
 			id:                 "0",
 			expectedStatusCode: 400,
 			body:               requestBody2,
-			expectederr:        errors.New("Error in inserting"),
-			mock:               mockService.EXPECT().Create(gomock.Any(), &testMovie1).Return(nil, errors.New("Error in inserting")),
+			expectederr:        errors.InvalidParam{Param: []string{"id"}},
+			mock:               mockService.EXPECT().Create(gomock.Any(), &testMovie1).Return(nil, errors.InvalidParam{Param: []string{"id"}}),
 		},
 	}
 
@@ -256,9 +257,9 @@ func TestUpdate(t *testing.T) {
 		{desc: "Get failure",
 			id:                 "0",
 			expectedStatusCode: 400,
-			expectederr:        errors.New("bad request"),
+			expectederr:        errors.InvalidParam{Param: []string{"id"}},
 			body:               requestBody2,
-			mock:               mockService.EXPECT().Update(gomock.Any(), &testMovie1).Return(nil, errors.New("bad request")),
+			mock:               mockService.EXPECT().Update(gomock.Any(), &testMovie1).Return(nil, errors.InvalidParam{Param: []string{"id"}}),
 		},
 	}
 
@@ -335,9 +336,9 @@ func TestDelete(t *testing.T) {
 			id:                 "0",
 			expectedStatusCode: 400,
 			movieObj:           testMovie1,
-			expectederr:        errors.New("bad request"),
+			expectederr:        errors.Error("bad request"),
 			mock: []*gomock.Call{
-				mockService.EXPECT().Delete(gomock.Any(), testMovie1.ID).Return(errors.New("bad request")),
+				mockService.EXPECT().Delete(gomock.Any(), testMovie1.ID).Return(errors.Error("bad request")),
 			},
 		},
 	}
