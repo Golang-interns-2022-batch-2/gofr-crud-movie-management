@@ -20,7 +20,6 @@ func New(m datastore.Movie) *Service {
 func (s *Service) GetByID(ctx *gofr.Context, id int) (*models.Movie, error) {
 	if id < 1 {
 		return nil, errors.InvalidParam{Param: []string{"id"}}
-
 	}
 
 	return s.movStore.GetByID(ctx, id)
@@ -29,7 +28,9 @@ func (s *Service) Delete(ctx *gofr.Context, id int) error {
 	if id <= 0 {
 		return errors.InvalidParam{Param: []string{"id"}}
 	}
+
 	err := s.movStore.Delete(ctx, id)
+
 	if err != nil {
 		return err
 	}
@@ -41,27 +42,26 @@ func (s *Service) Update(ctx *gofr.Context, mov *models.Movie) (*models.Movie, e
 	if mov.ID < 1 {
 		return nil, errors.InvalidParam{Param: []string{"id"}}
 	}
+
 	return s.movStore.Update(ctx, mov)
 }
 
 func (s *Service) Create(ctx *gofr.Context, mov *models.Movie) (*models.Movie, error) {
 	if mov.ID < 0 {
 		return nil, errors.InvalidParam{}
-
 	}
+
 	if mov.Name == "" {
 		return nil, errors.InvalidParam{}
-
 	}
+
 	if mov.Genre == "" {
 		return nil, errors.InvalidParam{}
-
 	}
 
 	res, err := s.movStore.Create(ctx, mov)
 	if err != nil {
 		return nil, errors.InvalidParam{Param: []string{"id"}}
-
 	}
 
 	return res, nil

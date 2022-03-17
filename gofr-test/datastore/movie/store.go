@@ -29,9 +29,11 @@ func (s *Store) GetByID(ctx *gofr.Context, id int) (*models.Movie, error) {
 	if err != nil && err.Error() == "sql: no rows in result set" {
 		return nil, errors.EntityNotFound{Entity: "movie", ID: fmt.Sprint(id)}
 	}
+
 	if err != nil {
 		return nil, errors.DB{Err: err}
 	}
+
 	return &mov, nil
 }
 func (s *Store) Delete(ctx *gofr.Context, id int) error {

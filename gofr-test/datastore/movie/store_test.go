@@ -1,7 +1,6 @@
 package movie
 
 import (
-	"context"
 	"developer.zopsmart.com/go/gofr/pkg/datastore"
 	"developer.zopsmart.com/go/gofr/pkg/errors"
 	"developer.zopsmart.com/go/gofr/pkg/gofr"
@@ -11,6 +10,8 @@ import (
 	"reflect"
 	"testing"
 	"time"
+
+	"context"
 )
 
 func TestGetByID(t *testing.T) {
@@ -109,8 +110,6 @@ func TestDelete(t *testing.T) {
 		t.Error(err)
 	}
 
-	//deleteErr := goError.New("delete failed")
-
 	testCases := []struct {
 		desc      string
 		id        int
@@ -156,8 +155,6 @@ func TestUpdate(t *testing.T) {
 	if err != nil {
 		t.Error(err)
 	}
-
-	//updaterr := goError.New("update failed")
 
 	date, _ := time.Parse(time.RFC3339, "2014-12-17")
 
@@ -246,8 +243,6 @@ func TestCreate(t *testing.T) {
 	if err != nil {
 		t.Error(err)
 	}
-
-	//createerr := goError.New("create failed")
 
 	date, _ := time.Parse(time.RFC3339, "2014-12-17")
 
@@ -387,7 +382,6 @@ func TestGetAll(t *testing.T) {
 	}
 
 	for _, tc := range testCases {
-		//s := Store{db: db}
 		s := New()
 		ctx := gofr.NewContext(nil, nil, &gofr.Gofr{DataStore: datastore.DataStore{ORM: db}})
 		ctx.Context = context.Background()

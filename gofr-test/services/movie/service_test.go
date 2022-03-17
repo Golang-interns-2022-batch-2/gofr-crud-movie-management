@@ -176,9 +176,6 @@ func TestUpdate(t *testing.T) {
 			id:            -1,
 			mv:            testMovie1,
 			expectedError: errors.InvalidParam{Param: []string{"id"}},
-			//mockCall: []*gomock.Call{
-			//	mockService.EXPECT().Update(ctx, gomock.Any()).Return(nil, sql.ErrNoRows),
-			//},
 		},
 	}
 	for _, test := range tests {

@@ -20,7 +20,6 @@ func main() {
 	app.PUT("/movie/{id}", h.Update)
 	app.POST("/movie", h.Create)
 	app.GET("/movie", h.GetAll)
-	//	app.Server.HTTP.RedirectToHTTPS = true
 
 	app.Start()
 }

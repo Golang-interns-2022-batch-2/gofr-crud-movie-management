@@ -2,11 +2,12 @@ package movie
 
 import (
 	"bytes"
+
 	"developer.zopsmart.com/go/gofr/pkg/errors"
+
 	"encoding/json"
 	"net/http"
 
-	//"developer.zopsmart.com/go/gofr/pkg/errors"
 	"developer.zopsmart.com/go/gofr/pkg/gofr"
 	"developer.zopsmart.com/go/gofr/pkg/gofr/request"
 	"developer.zopsmart.com/go/gofr/pkg/gofr/responder"
@@ -27,9 +28,6 @@ func TestGetByID(t *testing.T) {
 	mockService := service.NewMockMovie(ctrl)
 
 	app := gofr.New()
-
-	//ctx := gofr.NewContext(nil, nil, app)
-	//ctx.Context = context.Background()
 
 	date, _ := time.Parse(time.RFC3339, "2014-12-17")
 
