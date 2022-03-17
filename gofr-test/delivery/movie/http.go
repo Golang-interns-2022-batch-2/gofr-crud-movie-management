@@ -4,13 +4,13 @@ import (
 	"developer.zopsmart.com/go/gofr/pkg/errors"
 	"developer.zopsmart.com/go/gofr/pkg/gofr/types"
 	"fmt"
-	"github.com/anushi/newbatch/gofr-test/models"
+	"github.com/anushi/newbatch/gofr-crud-movie-management/gofr-test/models"
 	"log"
 	"strconv"
 
 	"developer.zopsmart.com/go/gofr/pkg/gofr"
 	//"github.com/anushi/newbatch/gofr-test/models"
-	"github.com/anushi/newbatch/gofr-test/services"
+	"github.com/anushi/newbatch/gofr-crud-movie-management/gofr-test/services"
 )
 
 type Handler struct {
@@ -29,6 +29,9 @@ func ErrorResponse(statusCode int, msg string) []byte {
 type data struct {
 	Movie interface{} `json:"movie"`
 }
+type response struct {
+	Data interface{} `json:"movie"`
+}
 
 func (handler *Handler) GetByID(ctx *gofr.Context) (interface{}, error) {
 
@@ -44,12 +47,12 @@ func (handler *Handler) GetByID(ctx *gofr.Context) (interface{}, error) {
 		return nil, err
 	}
 
-	response := types.Response{
+	response := response{
 		Data: data{
 			resp},
 	}
 
-	return response, nil
+	return types.Response{Data: response}, nil
 
 }
 
@@ -90,13 +93,13 @@ func (handler *Handler) Update(ctx *gofr.Context) (interface{}, error) {
 		return nil, err
 	}
 
-	response := types.Response{
+	response := response{
 		Data: data{
 			body,
 		},
 	}
 
-	return response, nil
+	return types.Response{Data: response}, nil
 }
 
 func (handler *Handler) Create(ctx *gofr.Context) (interface{}, error) {
@@ -110,10 +113,10 @@ func (handler *Handler) Create(ctx *gofr.Context) (interface{}, error) {
 	if err != nil {
 		return nil, err
 	}
-	response := types.Response{
+	response := response{
 		Data: data{mov},
 	}
-	return response, nil
+	return types.Response{Data: response}, nil
 }
 
 func (handler *Handler) GetAll(ctx *gofr.Context) (interface{}, error) {
@@ -130,10 +133,10 @@ func (handler *Handler) GetAll(ctx *gofr.Context) (interface{}, error) {
 	//
 	//return msg, nil
 
-	response := types.Response{
+	response := response{
 		Data: data{resp},
 	}
 
-	return response, nil
+	return types.Response{Data: response}, nil
 
 }

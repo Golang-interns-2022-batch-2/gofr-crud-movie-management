@@ -5,8 +5,8 @@ import (
 	"developer.zopsmart.com/go/gofr/pkg/errors"
 
 	"developer.zopsmart.com/go/gofr/pkg/gofr"
-	"github.com/anushi/newbatch/gofr-test/datastore"
-	"github.com/anushi/newbatch/gofr-test/models"
+	"github.com/anushi/newbatch/gofr-crud-movie-management/gofr-test/datastore"
+	"github.com/anushi/newbatch/gofr-crud-movie-management/gofr-test/models"
 )
 
 type Service struct {

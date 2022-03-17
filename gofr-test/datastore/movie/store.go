@@ -7,7 +7,7 @@ import (
 
 	"developer.zopsmart.com/go/gofr/pkg/gofr"
 
-	"github.com/anushi/newbatch/gofr-test/models"
+	"github.com/anushi/newbatch/gofr-crud-movie-management/gofr-test/models"
 
 	"developer.zopsmart.com/go/gofr/pkg/errors"
 )

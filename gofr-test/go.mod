@@ -1,4 +1,4 @@
-module github.com/anushi/newbatch/gofr-test
+module github.com/anushi/newbatch/gofr-crud-movie-management/gofr-test
 
 go 1.17
 

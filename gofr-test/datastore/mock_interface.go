@@ -8,7 +8,7 @@ import (
 	reflect "reflect"
 
 	gofr "developer.zopsmart.com/go/gofr/pkg/gofr"
-	models "github.com/anushi/newbatch/gofr-test/models"
+	models "github.com/anushi/newbatch/gofr-crud-movie-management/gofr-test/models"
 	gomock "github.com/golang/mock/gomock"
 )
 
