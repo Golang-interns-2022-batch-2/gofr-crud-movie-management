@@ -42,14 +42,12 @@ func (handler *Handler) GetByID(ctx *gofr.Context) (interface{}, error) {
 	}
 
 	resp, err := handler.service.GetByID(ctx, id)
-
 	if err != nil {
 		return nil, err
 	}
 
 	response := response{
-		Data: data{
-			resp},
+		Data: resp,
 	}
 
 	return types.Response{Data: response}, nil
@@ -94,9 +92,7 @@ func (handler *Handler) Update(ctx *gofr.Context) (interface{}, error) {
 	}
 
 	response := response{
-		Data: data{
-			body,
-		},
+		Data: body,
 	}
 
 	return types.Response{Data: response}, nil
@@ -114,7 +110,7 @@ func (handler *Handler) Create(ctx *gofr.Context) (interface{}, error) {
 		return nil, err
 	}
 	response := response{
-		Data: data{mov},
+		Data: mov,
 	}
 	return types.Response{Data: response}, nil
 }
@@ -134,7 +130,7 @@ func (handler *Handler) GetAll(ctx *gofr.Context) (interface{}, error) {
 	//return msg, nil
 
 	response := response{
-		Data: data{resp},
+		Data: resp,
 	}
 
 	return types.Response{Data: response}, nil
